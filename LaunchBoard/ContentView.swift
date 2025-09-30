@@ -145,7 +145,13 @@ struct ContentView: View {
                     opacity = 1.0
                 }
             }
-            .background(KeyboardHandler(onEscape: dismiss))
+            .background(KeyboardHandler(onEscape: hide))
+            .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
+                withAnimation(.easeOut(duration: 0.25)) {
+                    scale = 1.0
+                    opacity = 1.0
+                }
+            }
         }
     }
 
@@ -222,16 +228,16 @@ struct ContentView: View {
 
     private func launchApp(_ path: String) {
         NSWorkspace.shared.open(URL(fileURLWithPath: path))
-        dismiss()
+        hide()
     }
 
-    private func dismiss() {
+    private func hide() {
         withAnimation(.easeIn(duration: 0.25)) {
             scale = 0.8
             opacity = 0.0
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
-            NSApplication.shared.terminate(nil)
+            NSApp.hide(nil)
         }
     }
 
